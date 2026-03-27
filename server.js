@@ -11,6 +11,19 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+let dbInitialized = false;
+let initPromise = null;
+
+async function ensureDbInit() {
+  if (dbInitialized) return;
+  if (!initPromise) {
+    initPromise = initDatabase().then(() => {
+      dbInitialized = true;
+    });
+  }
+  await initPromise;
+}
+
 app.use(session({
   secret: 'your-secret-key-change-in-production',
   resave: false,
@@ -66,18 +79,21 @@ app.get('/post/:id', (req, res) => {
   res.render('post', { post });
 });
 
-app.get('/new', requireAuth, (req, res) => {
+app.get('/new', requireAuth, async (req, res) => {
+  await ensureDbInit();
   res.render('new');
 });
 
-app.post('/posts', requireAuth, (req, res) => {
+app.post('/posts', requireAuth, async (req, res) => {
+  await ensureDbInit();
   const { title, content, category } = req.body;
   const user = req.session.user;
   createPost(title, content, user.username, user.id, category || '生活');
   res.redirect('/');
 });
 
-app.get('/edit/:id', requireAuth, (req, res) => {
+app.get('/edit/:id', requireAuth, async (req, res) => {
+  await ensureDbInit();
   const post = getPostById(parseInt(req.params.id));
   if (!post) {
     return res.status(404).send('Post not found');
@@ -88,7 +104,8 @@ app.get('/edit/:id', requireAuth, (req, res) => {
   res.render('edit', { post });
 });
 
-app.post('/update/:id', requireAuth, (req, res) => {
+app.post('/update/:id', requireAuth, async (req, res) => {
+  await ensureDbInit();
   const post = getPostById(parseInt(req.params.id));
   if (!post) {
     return res.status(404).send('Post not found');
@@ -101,7 +118,8 @@ app.post('/update/:id', requireAuth, (req, res) => {
   res.redirect(`/post/${req.params.id}`);
 });
 
-app.post('/delete/:id', requireAuth, (req, res) => {
+app.post('/delete/:id', requireAuth, async (req, res) => {
+  await ensureDbInit();
   const post = getPostById(parseInt(req.params.id));
   if (!post) {
     return res.status(404).send('Post not found');
@@ -113,11 +131,13 @@ app.post('/delete/:id', requireAuth, (req, res) => {
   res.redirect('/');
 });
 
-app.get('/register', redirectIfAuth, (req, res) => {
+app.get('/register', redirectIfAuth, async (req, res) => {
+  await ensureDbInit();
   res.render('register', { error: null });
 });
 
 app.post('/register', redirectIfAuth, async (req, res) => {
+  await ensureDbInit();
   const { username, email, password, confirmPassword } = req.body;
   
   if (!username || !email || !password) {
@@ -141,11 +161,13 @@ app.post('/register', redirectIfAuth, async (req, res) => {
   }
 });
 
-app.get('/login', redirectIfAuth, (req, res) => {
+app.get('/login', redirectIfAuth, async (req, res) => {
+  await ensureDbInit();
   res.render('login', { error: null });
 });
 
 app.post('/login', redirectIfAuth, async (req, res) => {
+  await ensureDbInit();
   const { username, password } = req.body;
   
   if (!username || !password) {
@@ -175,7 +197,8 @@ app.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
-app.get('/profile', requireAuth, (req, res) => {
+app.get('/profile', requireAuth, async (req, res) => {
+  await ensureDbInit();
   const { getUserPosts } = require('./database');
   const posts = getUserPosts(req.session.user.id);
   const user = getUserById(req.session.user.id);
