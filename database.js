@@ -5,44 +5,60 @@ const bcrypt = require('bcryptjs');
 
 const dbPath = path.join(__dirname, 'blog.db');
 
+console.log('[Database] 資料庫路徑:', dbPath);
+
 let db;
 
 async function initDatabase() {
-  const SQL = await initSqlJs();
-  
-  if (fs.existsSync(dbPath)) {
-    const buffer = fs.readFileSync(dbPath);
-    db = new SQL.Database(buffer);
-  } else {
-    db = new SQL.Database();
-  }
-  
-  db.run(`
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT UNIQUE NOT NULL,
-      email TEXT UNIQUE NOT NULL,
-      password TEXT NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-  
-  db.run(`
-    CREATE TABLE IF NOT EXISTS posts (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      title TEXT NOT NULL,
-      content TEXT NOT NULL,
-      author TEXT NOT NULL DEFAULT 'Anonymous',
-      user_id INTEGER,
-      category TEXT DEFAULT '生活',
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users(id)
-    )
-  `);
+  console.log('[Database] 開始初始化...');
+  try {
+    const SQL = await initSqlJs();
+    console.log('[Database] sql.js 載入成功');
+    
+    if (fs.existsSync(dbPath)) {
+      console.log('[Database] 發現現有資料庫:', dbPath);
+      const buffer = fs.readFileSync(dbPath);
+      console.log('[Database] 資料庫大小:', buffer.length, 'bytes');
+      db = new SQL.Database(buffer);
+    } else {
+      console.log('[Database] 建立新資料庫');
+      db = new SQL.Database();
+    }
+    
+    console.log('[Database] 建立 users 資料表...');
+    db.run(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    
+    console.log('[Database] 建立 posts 資料表...');
+    db.run(`
+      CREATE TABLE IF NOT EXISTS posts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        content TEXT NOT NULL,
+        author TEXT NOT NULL DEFAULT 'Anonymous',
+        user_id INTEGER,
+        category TEXT DEFAULT '生活',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id)
+      )
+    `);
 
-  saveDatabase();
-  return db;
+    console.log('[Database] 儲存資料庫...');
+    saveDatabase();
+    console.log('[Database] 初始化完成');
+    return db;
+  } catch (err) {
+    console.error('[Database] 初始化錯誤:', err);
+    throw err;
+  }
 }
 
 function saveDatabase() {
