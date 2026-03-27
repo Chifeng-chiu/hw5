@@ -4,7 +4,7 @@ const path = require('path');
 const { initDatabase, getAllPosts, getPostById, createPost, updatePost, deletePost, createUser, verifyUser, getUserById, getPostsByCategory, searchPosts } = require('./database');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -189,4 +189,8 @@ async function startServer() {
   });
 }
 
-startServer();
+if (process.env.VERCEL === undefined) {
+  startServer();
+}
+
+module.exports = app;
