@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>編輯文章 - 我的部落格</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <h1>我的部落格</h1>
+      <ul>
+        <li><a href="/">首頁</a></li>
+        <li><a href="/profile" class="btn btn-outline"><%= user.username %></a></li>
+        <li><a href="/logout" class="btn btn-danger">登出</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <div class="form-wrapper">
+      <div class="form-card">
+        <h2>編輯文章</h2>
+        <p class="subtitle">更新您的文章內容</p>
+        
+        <form action="/update/<%= post.id %>" method="POST">
+          <div class="form-group">
+            <label for="title">標題</label>
+            <input type="text" id="title" name="title" value="<%= post.title %>" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="content">內容</label>
+            <textarea id="content" name="content" rows="12" required><%= post.content %></textarea>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-success btn-block">更新文章</button>
+            <a href="/post/<%= post.id %>" class="btn btn-secondary">取消</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>個人資料 - 我的部落格</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <h1>我的部落格</h1>
+      <ul>
+        <li><a href="/">首頁</a></li>
+        <li><a href="/new" class="btn">寫文章</a></li>
+        <li>
+          <div class="user-info">
+            <div class="user-avatar"><%= user.username.charAt(0).toUpperCase() %></div>
+            <span class="user-name"><%= user.username %></span>
+          </div>
+        </li>
+        <li><a href="/logout" class="btn btn-danger">登出</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <div class="hero">
+      <div class="user-avatar" style="width: 80px; height: 80px; font-size: 2rem; margin: 0 auto 1rem;">
+        <%= user.username.charAt(0).toUpperCase() %>
+      </div>
+      <h2><%= user.username %></h2>
+      <p class="subtitle"><%= user.email %></p>
+      <p class="meta" style="justify-content: center; margin-top: 0.5rem;">
+        <span>📅 加入時間：<%= new Date(user.created_at).toLocaleDateString('zh-TW') %></span>
+      </p>
+    </div>
+    
+    <h2 style="margin-bottom: 1.5rem;">我的文章</h2>
+    
+    <% if (posts.length === 0) { %>
+      <div class="empty">
+        <div class="empty-icon">📝</div>
+        <h3>還沒有發表過文章</h3>
+        <p>開始分享您的想法吧！</p>
+        <a href="/new" class="btn btn-primary" style="margin-top: 1rem;">寫第一篇文章</a>
+      </div>
+    <% } else { %>
+      <div class="posts-grid">
+        <% posts.forEach(post => { %>
+          <article class="post-card">
+            <div class="post-card-header">
+              <h3><a href="/post/<%= post.id %>"><%= post.title %></a></h3>
+              <p class="meta">
+                <span>📅 <%= new Date(post.created_at).toLocaleDateString('zh-TW') %></span>
+                <% if (post.updated_at !== post.created_at) { %>
+                  <span>✏️ 已更新</span>
+                <% } %>
+              </p>
+            </div>
+            <div class="post-card-body">
+              <p class="excerpt"><%= post.content.substring(0, 120) %>...</p>
+            </div>
+            <div class="post-card-footer">
+              <a href="/post/<%= post.id %>" class="read-more">閱讀更多 →</a>
+              <a href="/edit/<%= post.id %>" class="btn btn-sm btn-secondary">編輯</a>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+</body>
+</html>

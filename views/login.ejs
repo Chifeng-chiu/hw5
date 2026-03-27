@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登入 - 我的部落格</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <h1>我的部落格</h1>
+      <ul>
+        <li><a href="/">首頁</a></li>
+        <li><a href="/register" class="btn">註冊</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <div class="form-wrapper">
+      <div class="form-card">
+        <h2>歡迎回來</h2>
+        <p class="subtitle">登入您的帳戶</p>
+        
+        <% if (error) { %>
+          <div class="alert alert-error">
+            <span>⚠️</span>
+            <%= error %>
+          </div>
+        <% } %>
+        
+        <form action="/login" method="POST">
+          <div class="form-group">
+            <label for="username">使用者名稱或電子郵件</label>
+            <input type="text" id="username" name="username" placeholder="輸入使用者名稱或 email" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="password">密碼</label>
+            <input type="password" id="password" name="password" placeholder="輸入密碼" required>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-block">登入</button>
+          </div>
+        </form>
+        
+        <div class="auth-links">
+          還沒有帳戶？ <a href="/register">立即註冊</a>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

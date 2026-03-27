@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的部落格</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>我的部落格</h1>
+      <form class="search-bar" action="/search" method="GET">
+        <input type="text" name="q" placeholder="搜尋文章..." value="<%= typeof q !== 'undefined' ? q : '' %>">
+        <button type="submit">🔍</button>
+      </form>
+      <nav>
+        <ul>
+          <% if (user) { %>
+            <li><a href="/new" class="btn">寫文章</a></li>
+            <li>
+              <div class="user-info">
+                <div class="user-avatar"><%= user.username.charAt(0).toUpperCase() %></div>
+              </div>
+            </li>
+            <li><a href="/profile" class="btn btn-outline"><%= user.username %></a></li>
+            <li><a href="/logout" class="btn btn-danger">登出</a></li>
+          <% } else { %>
+            <li><a href="/login" class="btn btn-outline">登入</a></li>
+            <li><a href="/register" class="btn">註冊</a></li>
+          <% } %>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  
+  <div class="container">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <h3>📂 文章分類</h3>
+        <ul class="category-list">
+          <li><a href="/" class="<%= !currentCategory ? 'active' : '' %>">全部文章</a></li>
+          <li><a href="/category/<%= encodeURIComponent('感情') %>" class="<%= currentCategory === '感情' ? 'active' : '' %>">💕 感情</a></li>
+          <li><a href="/category/<%= encodeURIComponent('事業') %>" class="<%= currentCategory === '事業' ? 'active' : '' %>">💼 事業</a></li>
+          <li><a href="/category/<%= encodeURIComponent('學習') %>" class="<%= currentCategory === '學習' ? 'active' : '' %>">📚 學習</a></li>
+          <li><a href="/category/<%= encodeURIComponent('生活') %>" class="<%= currentCategory === '生活' ? 'active' : '' %>">🌿 生活</a></li>
+          <li><a href="/category/<%= encodeURIComponent('興趣') %>" class="<%= currentCategory === '興趣' ? 'active' : '' %>">🎯 興趣</a></li>
+          <li><a href="/category/<%= encodeURIComponent('健康') %>" class="<%= currentCategory === '健康' ? 'active' : '' %>">🏥 健康</a></li>
+          <li><a href="/category/<%= encodeURIComponent('理財') %>" class="<%= currentCategory === '理財' ? 'active' : '' %>">💰 理財</a></li>
+        </ul>
+      </div>
+    </aside>
+    
+    <main class="main-content">
+      <% if (currentCategory) { %>
+        <div class="category-header">
+          <h2><%= currentCategory %>分類的文章</h2>
+          <a href="/" class="btn btn-secondary">返回全部</a>
+        </div>
+      <% } else if (typeof q !== 'undefined' && q) { %>
+        <div class="category-header">
+          <h2>搜尋「<%= q %>」的結果</h2>
+          <a href="/" class="btn btn-secondary">清除搜尋</a>
+        </div>
+      <% } else { %>
+        <div class="hero">
+          <h2>歡迎來到我的部落格</h2>
+          <p>分享您的想法、故事和創意</p>
+        </div>
+      <% } %>
+      
+      <% if (posts.length === 0) { %>
+        <div class="empty">
+          <div class="empty-icon">📝</div>
+          <h3>目前沒有文章</h3>
+          <% if (user) { %>
+            <p>成為第一個發表文章的人吧！</p>
+            <a href="/new" class="btn btn-primary" style="margin-top: 1rem;">寫第一篇文章</a>
+          <% } else { %>
+            <p><a href="/register">註冊帳戶</a> 成為第一個發表文章的人！</p>
+          <% } %>
+        </div>
+      <% } else { %>
+        <div class="posts-grid">
+          <% posts.forEach(post => { %>
+            <article class="post-card">
+              <% if (post.category) { %>
+                <span class="category-tag"><%= post.category %></span>
+              <% } %>
+              <div class="post-card-header">
+                <h3><a href="/post/<%= post.id %>"><%= post.title %></a></h3>
+                <p class="meta">
+                  <span>👤 <%= post.author %></span>
+                  <span>📅 <%= new Date(post.created_at).toLocaleDateString('zh-TW') %></span>
+                </p>
+              </div>
+              <div class="post-card-body">
+                <p class="excerpt"><%= post.content.substring(0, 150) %>...</p>
+              </div>
+              <div class="post-card-footer">
+                <a href="/post/<%= post.id %>" class="read-more">閱讀更多 →</a>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+      <% } %>
+    </main>
+  </div>
+  
+  <footer>
+    <p>&copy; <%= currentYear %> 我的部落格. All rights reserved.</p>
+  </footer>
+</body>
+</html>

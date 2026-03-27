@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= post.title %> - 我的部落格</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <h1>我的部落格</h1>
+      <ul>
+        <% if (user) { %>
+          <li><a href="/">首頁</a></li>
+          <li><a href="/new" class="btn">寫文章</a></li>
+          <li><a href="/profile" class="btn btn-outline"><%= user.username %></a></li>
+          <li><a href="/logout" class="btn btn-danger">登出</a></li>
+        <% } else { %>
+          <li><a href="/">首頁</a></li>
+          <li><a href="/login" class="btn btn-outline">登入</a></li>
+          <li><a href="/register" class="btn">註冊</a></li>
+        <% } %>
+      </ul>
+    </nav>
+  </header>
+  <main class="post-detail">
+    <article>
+      <div class="post-header">
+        <h1><%= post.title %></h1>
+        <p class="meta">
+          <span>👤 作者: <%= post.author %></span>
+          <span>📅 發布時間: <%= new Date(post.created_at).toLocaleString('zh-TW') %></span>
+          <% if (post.updated_at !== post.created_at) { %>
+            <span>✏️ 更新時間: <%= new Date(post.updated_at).toLocaleString('zh-TW') %></span>
+          <% } %>
+        </p>
+      </div>
+      <div class="content"><%= post.content %></div>
+      <% if (user && user.username === post.author) { %>
+        <div class="actions">
+          <a href="/edit/<%= post.id %>" class="btn btn-secondary">✏️ 編輯文章</a>
+          <form action="/delete/<%= post.id %>" method="POST" onsubmit="return confirm('確定要刪除嗎？')">
+            <button type="submit" class="btn btn-danger">🗑️ 刪除文章</button>
+          </form>
+        </div>
+      <% } %>
+    </article>
+  </main>
+  <footer>
+    <p>&copy; <%= currentYear %> 我的部落格. All rights reserved.</p>
+  </footer>
+</body>
+</html>

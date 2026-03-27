@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>寫文章 - 我的部落格</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <h1>我的部落格</h1>
+      <ul>
+        <li><a href="/">首頁</a></li>
+        <li><a href="/profile" class="btn btn-outline"><%= user.username %></a></li>
+        <li><a href="/logout" class="btn btn-danger">登出</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <div class="form-wrapper">
+      <div class="form-card">
+        <h2>寫新文章</h2>
+        <p class="subtitle">分享您的想法</p>
+        
+        <form action="/posts" method="POST">
+          <div class="form-group">
+            <label for="title">標題</label>
+            <input type="text" id="title" name="title" placeholder="輸入文章標題" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="category">分類</label>
+            <select id="category" name="category" required>
+              <option value="感情">💕 感情</option>
+              <option value="事業">💼 事業</option>
+              <option value="學習">📚 學習</option>
+              <option value="生活" selected>🌿 生活</option>
+              <option value="興趣">🎯 興趣</option>
+              <option value="健康">🏥 健康</option>
+              <option value="理財">💰 理財</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="content">內容</label>
+            <textarea id="content" name="content" rows="12" placeholder="寫下您的文章內容..." required></textarea>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-success btn-block">發布文章</button>
+            <a href="/" class="btn btn-secondary">取消</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
